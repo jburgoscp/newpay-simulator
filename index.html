@@ -267,6 +267,66 @@
             color: #7f8c8d;
         }
         
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .editable-cell:hover {
+            background-color: #f0f8ff;
+        }
+        
+        .editable-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--secondary);
+            padding: 8px 12px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        
+        .editable-list-item {
+            cursor: pointer;
+            position: relative;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        
+        .editable-list-item:hover {
+            background-color: #f0f8ff;
+        }
+        
+        .editable-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .bcg-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bcg-product-select {
+            flex: 2;
+        }
+        
+        .bcg-input {
+            flex: 1;
+        }
+        
+        .bcg-update-btn {
+            flex: 0.5;
+        }
+        
         @media (max-width: 768px) {
             .dashboard {
                 grid-template-columns: 1fr;
@@ -274,6 +334,10 @@
             
             .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
+            }
+            
+            .bcg-controls {
+                flex-direction: column;
             }
         }
     </style>
@@ -317,17 +381,17 @@
                                 <div class="kpi-card">
                                     <div class="kpi-title">Ingresos Operativos</div>
                                     <div class="kpi-value" id="revenue-kpi">$10.0M</div>
-                                    <div>+12% vs anterior</div>
+                                    <div id="revenue-change">+12% vs anterior</div>
                                 </div>
                                 <div class="kpi-card">
                                     <div class="kpi-title">EBITDA</div>
                                     <div class="kpi-value" id="ebitda-kpi">$3.2M</div>
-                                    <div>Margen: 32%</div>
+                                    <div id="ebitda-margin">Margen: 32%</div>
                                 </div>
                                 <div class="kpi-card">
                                     <div class="kpi-title">Transacciones</div>
                                     <div class="kpi-value" id="txn-kpi">1.2M</div>
-                                    <div>+70% YoY</div>
+                                    <div id="txn-change">+70% YoY</div>
                                 </div>
                             </div>
                             
@@ -359,21 +423,21 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Margen Bruto/Transacción</td>
-                                                    <td>$0.50</td>
+                                                    <td id="gross-margin-per-txn">$0.50</td>
                                                     <td>$0.40</td>
-                                                    <td><span class="status-indicator status-warning"></span>Alerta</td>
+                                                    <td><span class="status-indicator status-warning"></span><span id="gross-margin-status">Alerta</span></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Tasa de Éxito</td>
-                                                    <td>98%</td>
+                                                    <td id="success-rate-kpi">98%</td>
                                                     <td>95%</td>
-                                                    <td><span class="status-indicator status-good"></span>Óptimo</td>
+                                                    <td><span class="status-indicator status-good"></span><span id="success-rate-status">Óptimo</span></td>
                                                 </tr>
                                                 <tr>
                                                     <td>NPS</td>
-                                                    <td>65</td>
+                                                    <td id="nps-dashboard">65</td>
                                                     <td>70</td>
-                                                    <td><span class="status-indicator status-warning"></span>Mejorable</td>
+                                                    <td><span class="status-indicator status-warning"></span><span id="nps-status">Mejorable</span></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -396,6 +460,21 @@
                                 <input type="number" id="transaction-volume" value="1.2" step="0.1" min="0">
                             </div>
                             
+                            <div class="form-group grid-3">
+                                <div>
+                                    <label for="income-percent">% Ingresos por Transacción</label>
+                                    <input type="number" id="income-percent" value="100" min="0" step="1">
+                                </div>
+                                <div>
+                                    <label for="cost-percent">% Costos Directos</label>
+                                    <input type="number" id="cost-percent" value="60" min="0" max="100" step="1">
+                                </div>
+                                <div>
+                                    <label for="expense-percent">% Gastos Operativos</label>
+                                    <input type="number" id="expense-percent" value="8" min="0" max="100" step="1">
+                                </div>
+                            </div>
+                            
                             <table>
                                 <thead>
                                     <tr>
@@ -407,28 +486,28 @@
                                 <tbody>
                                     <tr>
                                         <td>Ingresos Operativos</td>
-                                        <td id="operating-income">$10,000,000</td>
-                                        <td>100%</td>
+                                        <td id="operating-income" class="editable-cell">$10,000,000</td>
+                                        <td id="income-percent-display">100%</td>
                                     </tr>
                                     <tr>
                                         <td>Costos Directos</td>
-                                        <td id="direct-costs">$6,000,000</td>
-                                        <td>60%</td>
+                                        <td id="direct-costs" class="editable-cell">$6,000,000</td>
+                                        <td id="cost-percent-display">60%</td>
                                     </tr>
                                     <tr>
                                         <td>Margen Bruto</td>
                                         <td id="gross-margin">$4,000,000</td>
-                                        <td>40%</td>
+                                        <td id="gross-margin-percent">40%</td>
                                     </tr>
                                     <tr>
                                         <td>Gastos Operativos</td>
-                                        <td id="operating-expenses">$800,000</td>
-                                        <td>8%</td>
+                                        <td id="operating-expenses" class="editable-cell">$800,000</td>
+                                        <td id="expense-percent-display">8%</td>
                                     </tr>
                                     <tr>
                                         <td>EBITDA</td>
                                         <td id="ebitda">$3,200,000</td>
-                                        <td>32%</td>
+                                        <td id="ebitda-percent">32%</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -497,11 +576,24 @@
                             <h2 class="card-title">Matriz BCG - Portafolio de Productos</h2>
                         </div>
                         <div class="card-body">
+                            <div class="bcg-controls">
+                                <select id="bcg-product" class="bcg-product-select">
+                                    <option value="transferencias">Transferencias Instantáneas</option>
+                                    <option value="qr">Pago con QR</option>
+                                    <option value="tarjetas">Tarjetas de Crédito</option>
+                                    <option value="remesas">Remesas con Cripto</option>
+                                    <option value="cheques">Cheques Electrónicos</option>
+                                </select>
+                                <input type="number" id="bcg-market-share" class="bcg-input" placeholder="Participación %" min="0" max="100" step="0.1">
+                                <input type="number" id="bcg-growth" class="bcg-input" placeholder="Crecimiento %" step="1">
+                                <button class="btn bcg-update-btn" id="update-bcg">Actualizar</button>
+                            </div>
+                            
                             <div style="position: relative; height: 400px;">
                                 <canvas id="bcg-matrix"></canvas>
                             </div>
                             
-                            <table style="margin-top: 30px;">
+                            <table style="margin-top: 30px;" id="bcg-table">
                                 <thead>
                                     <tr>
                                         <th>Producto</th>
@@ -512,40 +604,40 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr data-product="transferencias">
                                         <td>Transferencias Instantáneas</td>
-                                        <td>35%</td>
-                                        <td>70%</td>
+                                        <td class="editable-cell">35%</td>
+                                        <td class="editable-cell">70%</td>
                                         <td>Estrella</td>
-                                        <td>Invertir para mantener liderazgo</td>
+                                        <td class="editable-cell">Invertir para mantener liderazgo</td>
                                     </tr>
-                                    <tr>
+                                    <tr data-product="qr">
                                         <td>Pago con QR</td>
-                                        <td>15%</td>
-                                        <td>120%</td>
+                                        <td class="editable-cell">15%</td>
+                                        <td class="editable-cell">120%</td>
                                         <td>Estrella Emergente</td>
-                                        <td>Aumentar inversión</td>
+                                        <td class="editable-cell">Aumentar inversión</td>
                                     </tr>
-                                    <tr>
+                                    <tr data-product="tarjetas">
                                         <td>Tarjetas de Crédito</td>
-                                        <td>25%</td>
-                                        <td>5%</td>
+                                        <td class="editable-cell">25%</td>
+                                        <td class="editable-cell">5%</td>
                                         <td>Vaca Lechera</td>
-                                        <td>Mantener, generar cash flow</td>
+                                        <td class="editable-cell">Mantener, generar cash flow</td>
                                     </tr>
-                                    <tr>
+                                    <tr data-product="remesas">
                                         <td>Remesas con Cripto</td>
-                                        <td>3%</td>
-                                        <td>300%</td>
+                                        <td class="editable-cell">3%</td>
+                                        <td class="editable-cell">300%</td>
                                         <td>Interrogante</td>
-                                        <td>Evaluar potencial</td>
+                                        <td class="editable-cell">Evaluar potencial</td>
                                     </tr>
-                                    <tr>
+                                    <tr data-product="cheques">
                                         <td>Cheques Electrónicos</td>
-                                        <td>8%</td>
-                                        <td>-10%</td>
+                                        <td class="editable-cell">8%</td>
+                                        <td class="editable-cell">-10%</td>
                                         <td>Perro</td>
-                                        <td>Desinvertir</td>
+                                        <td class="editable-cell">Desinvertir</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -567,51 +659,51 @@
                             <div class="grid-2" style="margin-top: 30px;">
                                 <div>
                                     <h3>Evaluación de Fuerzas</h3>
-                                    <table>
+                                    <table id="porter-table">
                                         <thead>
                                             <tr>
                                                 <th>Fuerza</th>
-                                                <th>Intensidad</th>
+                                                <th>Intensidad (1-5)</th>
                                                 <th>Impacto</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
+                                            <tr data-force="entrantes">
                                                 <td>Nuevos Entrantes</td>
-                                                <td>Alto</td>
-                                                <td>Fintechs como Nubank</td>
+                                                <td class="editable-cell">Alto</td>
+                                                <td class="editable-cell">Fintechs como Nubank</td>
                                             </tr>
-                                            <tr>
+                                            <tr data-force="proveedores">
                                                 <td>Poder de Proveedores</td>
-                                                <td>Medio</td>
-                                                <td>Dependencia de ACI</td>
+                                                <td class="editable-cell">Medio</td>
+                                                <td class="editable-cell">Dependencia de ACI</td>
                                             </tr>
-                                            <tr>
+                                            <tr data-force="clientes">
                                                 <td>Poder de Clientes</td>
-                                                <td>Alto</td>
-                                                <td>Meli tiene gran poder</td>
+                                                <td class="editable-cell">Alto</td>
+                                                <td class="editable-cell">Meli tiene gran poder</td>
                                             </tr>
-                                            <tr>
+                                            <tr data-force="sustitutos">
                                                 <td>Sustitutos</td>
-                                                <td>Medio</td>
-                                                <td>Criptomonedas</td>
+                                                <td class="editable-cell">Medio</td>
+                                                <td class="editable-cell">Criptomonedas</td>
                                             </tr>
-                                            <tr>
+                                            <tr data-force="rivalidad">
                                                 <td>Rivalidad Competitiva</td>
-                                                <td>Alto</td>
-                                                <td>Coelsa y Link dominan</td>
+                                                <td class="editable-cell">Alto</td>
+                                                <td class="editable-cell">Coelsa y Link dominan</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div>
                                     <h3>Estrategias Recomendadas</h3>
-                                    <ul style="padding-left: 20px;">
-                                        <li>Fortalecer alianzas con fintechs para contrarrestar nuevos entrantes</li>
-                                        <li>Diversificar proveedores de infraestructura</li>
-                                        <li>Desarrollar lealtad con clientes clave (ej: programas de beneficios)</li>
-                                        <li>Innovar en productos para diferenciarse de sustitutos</li>
-                                        <li>Enfocarse en nichos no atendidos por competidores</li>
+                                    <ul id="porter-strategies" style="padding-left: 20px;">
+                                        <li class="editable-list-item">Fortalecer alianzas con fintechs para contrarrestar nuevos entrantes</li>
+                                        <li class="editable-list-item">Diversificar proveedores de infraestructura</li>
+                                        <li class="editable-list-item">Desarrollar lealtad con clientes clave (ej: programas de beneficios)</li>
+                                        <li class="editable-list-item">Innovar en productos para diferenciarse de sustitutos</li>
+                                        <li class="editable-list-item">Enfocarse en nichos no atendidos por competidores</li>
                                     </ul>
                                 </div>
                             </div>
@@ -624,59 +716,84 @@
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">Análisis PESTEL</h2>
+                            <button class="btn btn-primary" id="update-pestel">Actualizar Impacto</button>
                         </div>
                         <div class="card-body">
                             <div class="grid-3">
                                 <div class="kpi-card" style="background-color: #e8f4f8;">
                                     <h3>Político</h3>
-                                    <ul>
-                                        <li>Apertura financiera en Argentina</li>
-                                        <li>Nuevas regulaciones de pagos</li>
-                                        <li>Presión para inclusión financiera</li>
+                                    <ul id="politico-list">
+                                        <li class="editable-list-item">Apertura financiera en Argentina</li>
+                                        <li class="editable-list-item">Nuevas regulaciones de pagos</li>
+                                        <li class="editable-list-item">Presión para inclusión financiera</li>
                                     </ul>
+                                    <div class="form-group">
+                                        <label for="politico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="politico-impact" value="7" min="1" max="10">
+                                    </div>
                                 </div>
                                 <div class="kpi-card" style="background-color: #e8f8f0;">
                                     <h3>Económico</h3>
-                                    <ul>
-                                        <li>Crecimiento del 70% YoY en transacciones</li>
-                                        <li>Inflación impacta costos</li>
-                                        <li>Oportunidad en remesas</li>
+                                    <ul id="economico-list">
+                                        <li class="editable-list-item">Crecimiento del 70% YoY en transacciones</li>
+                                        <li class="editable-list-item">Inflación impacta costos</li>
+                                        <li class="editable-list-item">Oportunidad en remesas</li>
                                     </ul>
+                                    <div class="form-group">
+                                        <label for="economico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="economico-impact" value="8" min="1" max="10">
+                                    </div>
                                 </div>
                                 <div class="kpi-card" style="background-color: #f9f0e8;">
                                     <h3>Social</h3>
-                                    <ul>
-                                        <li>Demanda de inmediatez (Gen Z)</li>
-                                        <li>Adopción masiva de móviles</li>
-                                        <li>Desconfianza en bancos tradicionales</li>
+                                    <ul id="social-list">
+                                        <li class="editable-list-item">Demanda de inmediatez (Gen Z)</li>
+                                        <li class="editable-list-item">Adopción masiva de móviles</li>
+                                        <li class="editable-list-item">Desconfianza en bancos tradicionales</li>
                                     </ul>
+                                    <div class="form-group">
+                                        <label for="social-impact">Impacto (1-10)</label>
+                                        <input type="number" id="social-impact" value="9" min="1" max="10">
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="grid-3" style="margin-top: 20px;">
                                 <div class="kpi-card" style="background-color: #f0e8f8;">
                                     <h3>Tecnológico</h3>
-                                    <ul>
-                                        <li>Blockchain para remesas</li>
-                                        <li>APIs abiertas (Open Finance)</li>
-                                        <li>IA para prevención de fraude</li>
+                                    <ul id="tecnologico-list">
+                                        <li class="editable-list-item">Blockchain para remesas</li>
+                                        <li class="editable-list-item">APIs abiertas (Open Finance)</li>
+                                        <li class="editable-list-item">IA para prevención de fraude</li>
                                     </ul>
+                                    <div class="form-group">
+                                        <label for="tecnologico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="tecnologico-impact" value="8" min="1" max="10">
+                                    </div>
                                 </div>
                                 <div class="kpi-card" style="background-color: #f8f8e8;">
                                     <h3>Ecológico</h3>
-                                    <ul>
-                                        <li>Huella de carbono en data centers</li>
-                                        <li>Presión por operaciones paperless</li>
-                                        <li>Energías renovables para infraestructura</li>
+                                    <ul id="ecologico-list">
+                                        <li class="editable-list-item">Huella de carbono en data centers</li>
+                                        <li class="editable-list-item">Presión por operaciones paperless</li>
+                                        <li class="editable-list-item">Energías renovables para infraestructura</li>
                                     </ul>
+                                    <div class="form-group">
+                                        <label for="ecologico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="ecologico-impact" value="4" min="1" max="10">
+                                    </div>
                                 </div>
                                 <div class="kpi-card" style="background-color: #f8e8e8;">
                                     <h3>Legal</h3>
-                                    <ul>
-                                        <li>Regulación de criptoactivos</li>
-                                        <li>Leyes de protección de datos</li>
-                                        <li>Nuevas normas contra lavado</li>
+                                    <ul id="legal-list">
+                                        <li class="editable-list-item">Regulación de criptoactivos</li>
+                                        <li class="editable-list-item">Leyes de protección de datos</li>
+                                        <li class="editable-list-item">Nuevas normas contra lavado</li>
                                     </ul>
+                                    <div class="form-group">
+                                        <label for="legal-impact">Impacto (1-10)</label>
+                                        <input type="number" id="legal-impact" value="6" min="1" max="10">
+                                    </div>
                                 </div>
                             </div>
                             
@@ -685,14 +802,14 @@
                                 <div class="grid-2">
                                     <div>
                                         <div class="kpi-card" style="background-color: #e8f8e8; text-align: left;">
-                                            <h4>Remesas con Cripto</h4>
-                                            <p>Aprovechar la nueva regulación para capturar el mercado de remesas USA-Latam (crecimiento del 300%)</p>
+                                            <h4 class="editable-cell">Remesas con Cripto</h4>
+                                            <p class="editable-cell">Aprovechar la nueva regulación para capturar el mercado de remesas USA-Latam (crecimiento del 300%)</p>
                                         </div>
                                     </div>
                                     <div>
                                         <div class="kpi-card" style="background-color: #e8e8f8; text-align: left;">
-                                            <h4>Open Finance</h4>
-                                            <p>Posicionarse como plataforma de integración para fintechs y bancos tradicionales</p>
+                                            <h4 class="editable-cell">Open Finance</h4>
+                                            <p class="editable-cell">Posicionarse como plataforma de integración para fintechs y bancos tradicionales</p>
                                         </div>
                                     </div>
                                 </div>
@@ -714,6 +831,8 @@
                                     <option value="crypto">Inversión en Cripto para Remesas</option>
                                     <option value="fintech">Alianza con Fintech</option>
                                     <option value="product">Lanzamiento de Nuevo Producto</option>
+                                    <option value="bcg">Reasignación Portafolio BCG</option>
+                                    <option value="pestel">Cambio Estrategia PESTEL</option>
                                 </select>
                             </div>
                             
@@ -744,7 +863,12 @@
                                             <td>Impacto en EBITDA:</td>
                                             <td id="crypto-ebitda-impact">+12%</td>
                                         </tr>
+                                        <tr>
+                                            <td>Impacto en NPS:</td>
+                                            <td id="crypto-nps-impact">+5 puntos</td>
+                                        </tr>
                                     </table>
+                                    <button class="btn btn-primary" id="apply-crypto">Aplicar Cambios</button>
                                 </div>
                             </div>
                             
@@ -779,7 +903,12 @@
                                             <td>Impacto en NPS:</td>
                                             <td id="fintech-nps-impact">+8 puntos</td>
                                         </tr>
+                                        <tr>
+                                            <td>Impacto en Costos:</td>
+                                            <td id="fintech-cost-impact">-5%</td>
+                                        </tr>
                                     </table>
+                                    <button class="btn btn-primary" id="apply-fintech">Aplicar Cambios</button>
                                 </div>
                             </div>
                             
@@ -818,7 +947,104 @@
                                             <td>Impacto en Churn Rate:</td>
                                             <td id="product-churn-impact">-2%</td>
                                         </tr>
+                                        <tr>
+                                            <td>Impacto en Ingresos:</td>
+                                            <td id="product-revenue-impact">+15%</td>
+                                        </tr>
                                     </table>
+                                    <button class="btn btn-primary" id="apply-product">Aplicar Cambios</button>
+                                </div>
+                            </div>
+                            
+                            <div id="bcg-options" class="scenario-options hidden">
+                                <h3>Reasignación de Portafolio BCG</h3>
+                                <div class="form-group">
+                                    <label for="bcg-strategy">Estrategia de Inversión</label>
+                                    <select id="bcg-strategy">
+                                        <option value="balance">Balanceado (actual)</option>
+                                        <option value="growth">Enfoque en Crecimiento</option>
+                                        <option value="profit">Enfoque en Rentabilidad</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bcg-budget">Presupuesto Total (USD)</label>
+                                    <input type="number" id="bcg-budget" value="2000000" min="0" step="100000">
+                                </div>
+                                <button class="btn" id="simulate-bcg">Simular</button>
+                                
+                                <div id="bcg-results" style="margin-top: 20px; display: none;">
+                                    <h4>Resultados de la Simulación</h4>
+                                    <table>
+                                        <tr>
+                                            <td>ROI Esperado (3 años):</td>
+                                            <td id="bcg-roi">28%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en Ingresos:</td>
+                                            <td id="bcg-revenue-impact">+18%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en EBITDA:</td>
+                                            <td id="bcg-ebitda-impact">+8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Participación de Mercado Total:</td>
+                                            <td id="bcg-market-share">+5%</td>
+                                        </tr>
+                                    </table>
+                                    <div class="form-group">
+                                        <label for="bcg-scenario">Aplicar a Escenario:</label>
+                                        <select id="bcg-scenario">
+                                            <option value="base">Base</option>
+                                            <option value="optimista">Optimista</option>
+                                            <option value="pesimista">Pesimista</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary" id="apply-bcg">Aplicar Cambios</button>
+                                </div>
+                            </div>
+                            
+                            <div id="pestel-options" class="scenario-options hidden">
+                                <h3>Cambio de Estrategia PESTEL</h3>
+                                <div class="form-group">
+                                    <label for="pestel-focus">Área de Enfoque</label>
+                                    <select id="pestel-focus">
+                                        <option value="tecnologico">Tecnológico (Blockchain, IA)</option>
+                                        <option value="regulatorio">Regulatorio (Cumplimiento)</option>
+                                        <option value="social">Social (Experiencia Usuario)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pestel-investment">Inversión Requerida (USD)</label>
+                                    <input type="number" id="pestel-investment" value="1200000" min="0" step="100000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pestel-timeline">Horizonte (meses)</label>
+                                    <input type="number" id="pestel-timeline" value="12" min="3" max="36">
+                                </div>
+                                <button class="btn" id="simulate-pestel">Simular</button>
+                                
+                                <div id="pestel-results" style="margin-top: 20px; display: none;">
+                                    <h4>Resultados de la Simulación</h4>
+                                    <table>
+                                        <tr>
+                                            <td>Impacto en NPS:</td>
+                                            <td id="pestel-nps-impact">+10 puntos</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Reducción de Riesgos:</td>
+                                            <td id="pestel-risk-impact">-25%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en Costos Operativos:</td>
+                                            <td id="pestel-cost-impact">-8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tiempo para ROI:</td>
+                                            <td id="pestel-roi-time">18 meses</td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn btn-primary" id="apply-pestel">Aplicar Cambios</button>
                                 </div>
                             </div>
                         </div>
@@ -829,428 +1055,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Update active link
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Hide all sections
-                document.querySelectorAll('.content-section').forEach(section => {
-                    section.classList.add('hidden');
-                });
-                
-                // Show selected section
-                const sectionId = this.getAttribute('data-section') + '-section';
-                document.getElementById(sectionId).classList.remove('hidden');
-            });
-        });
-        
-        // Scenario buttons
-        document.querySelectorAll('.scenario-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const scenario = this.getAttribute('data-scenario');
-                updateScenario(scenario);
-            });
-        });
-        
-        function updateScenario(scenario) {
-            // Update values based on scenario
-            let revenue, ebitda, txnVolume;
-            
-            switch(scenario) {
-                case 'optimista':
-                    revenue = '$12.0M';
-                    ebitda = '$4.2M';
-                    txnVolume = '1.5M';
-                    break;
-                case 'pesimista':
-                    revenue = '$8.0M';
-                    ebitda = '$2.2M';
-                    txnVolume = '0.9M';
-                    break;
-                default: // base
-                    revenue = '$10.0M';
-                    ebitda = '$3.2M';
-                    txnVolume = '1.2M';
-            }
-            
-            document.getElementById('revenue-kpi').textContent = revenue;
-            document.getElementById('ebitda-kpi').textContent = ebitda;
-            document.getElementById('txn-kpi').textContent = txnVolume;
-            
-            // Update charts
-            if (window.revenueChart) {
-                updateCharts(scenario);
-            }
-        }
-        
-        // Transaction volume input
-        document.getElementById('transaction-volume').addEventListener('input', function() {
-            const volume = parseFloat(this.value) || 0;
-            updatePL(volume);
-        });
-        
-        function updatePL(volume) {
-            // Simple linear model for demo purposes
-            const baseIncome = 10000000;
-            const baseVolume = 1.2;
-            const income = (volume / baseVolume) * baseIncome;
-            const costs = income * 0.6;
-            const expenses = income * 0.08;
-            const ebitda = income - costs - expenses;
-            
-            document.getElementById('operating-income').textContent = formatCurrency(income);
-            document.getElementById('direct-costs').textContent = formatCurrency(costs);
-            document.getElementById('gross-margin').textContent = formatCurrency(income - costs);
-            document.getElementById('operating-expenses').textContent = formatCurrency(expenses);
-            document.getElementById('ebitda').textContent = formatCurrency(ebitda);
-            
-            // Update KPI
-            const costPerTxn = (costs + expenses) / (volume * 1000000);
-            document.getElementById('cost-per-txn').textContent = '$' + costPerTxn.toFixed(2);
-            
-            // Update charts
-            if (window.plChart) {
-                updatePLChart(income, costs, expenses);
-            }
-        }
-        
-        function formatCurrency(amount) {
-            return '$' + Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-        
-        // Scenario options in simulator
-        document.getElementById('decision-scenario').addEventListener('change', function() {
-            document.querySelectorAll('.scenario-options').forEach(opt => {
-                opt.classList.add('hidden');
-            });
-            
-            document.getElementById(this.value + '-options').classList.remove('hidden');
-        });
-        
-        // Simulation buttons
-        document.getElementById('simulate-crypto').addEventListener('click', function() {
-            const investment = parseInt(document.getElementById('crypto-investment').value) || 0;
-            const adoption = parseInt(document.getElementById('crypto-adoption').value) || 0;
-            
-            // Simple simulation logic
-            const roi = 15 + (adoption / 2) + (investment > 2000000 ? 10 : 0);
-            const marketShare = Math.min(15, 3 + (adoption / 10));
-            const ebitdaImpact = 5 + (adoption / 5);
-            
-            document.getElementById('crypto-roi').textContent = roi + '%';
-            document.getElementById('crypto-market-share').textContent = marketShare + '%';
-            document.getElementById('crypto-ebitda-impact').textContent = '+' + ebitdaImpact + '%';
-            
-            document.getElementById('crypto-results').style.display = 'block';
-        });
-        
-        document.getElementById('simulate-fintech').addEventListener('click', function() {
-            const type = document.getElementById('fintech-type').value;
-            const investment = parseInt(document.getElementById('fintech-investment').value) || 0;
-            
-            // Simple simulation logic
-            let txns, roi, nps;
-            
-            if (type === 'neobank') {
-                txns = 250000 + (investment / 2000000) * 150000;
-                roi = 30 + (investment > 1000000 ? 10 : 0);
-                nps = 8;
-            } else if (type === 'remesas') {
-                txns = 180000 + (investment / 2000000) * 120000;
-                roi = 35;
-                nps = 5;
-            } else { // pagos
-                txns = 300000 + (investment / 2000000) * 200000;
-                roi = 25;
-                nps = 10;
-            }
-            
-            document.getElementById('fintech-txns').textContent = formatNumber(txns);
-            document.getElementById('fintech-roi').textContent = roi + '%';
-            document.getElementById('fintech-nps-impact').textContent = '+' + nps + ' puntos';
-            
-            document.getElementById('fintech-results').style.display = 'block';
-        });
-        
-        document.getElementById('simulate-product').addEventListener('click', function() {
-            const type = document.getElementById('product-type').value;
-            const investment = parseInt(document.getElementById('product-investment').value) || 0;
-            const timeline = parseInt(document.getElementById('product-timeline').value) || 0;
-            
-            // Simple simulation logic
-            let breakeven, marketShare, churnImpact;
-            
-            if (type === 'qr') {
-                breakeven = Math.max(12, 15 - (investment / 500000));
-                marketShare = 10 + (investment > 1000000 ? 5 : 0);
-                churnImpact = -2;
-            } else if (type === 'billetera') {
-                breakeven = Math.max(18, 20 - (investment / 500000));
-                marketShare = 15;
-                churnImpact = -3;
-            } else { // credito
-                breakeven = Math.max(15, 18 - (investment / 500000));
-                marketShare = 8;
-                churnImpact = -1;
-            }
-            
-            // Adjust for timeline
-            breakeven = breakeven + (timeline - 9) / 3;
-            
-            document.getElementById('product-breakeven').textContent = Math.round(breakeven) + ' meses';
-            document.getElementById('product-market-share').textContent = marketShare + '%';
-            document.getElementById('product-churn-impact').textContent = churnImpact + '%';
-            
-            document.getElementById('product-results').style.display = 'block';
-        });
-        
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-        
-        // Initialize charts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenue-chart').getContext('2d');
-            window.revenueChart = new Chart(revenueCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Ingresos (millones)',
-                        data: [8, 8.5, 9.2, 9.8, 10.5, 11.2],
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 7
-                        }
-                    }
-                }
-            });
-            
-            // P&L Chart
-            const plCtx = document.getElementById('pl-chart').getContext('2d');
-            window.plChart = new Chart(plCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Ingresos', 'Costos', 'Gastos', 'EBITDA'],
-                    datasets: [{
-                        label: 'Millones USD',
-                        data: [10, 6, 0.8, 3.2],
-                        backgroundColor: [
-                            'rgba(46, 204, 113, 0.7)',
-                            'rgba(231, 76, 60, 0.7)',
-                            'rgba(241, 196, 15, 0.7)',
-                            'rgba(52, 152, 219, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(46, 204, 113, 1)',
-                            'rgba(231, 76, 60, 1)',
-                            'rgba(241, 196, 15, 1)',
-                            'rgba(52, 152, 219, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-            
-            function updatePLChart(income, costs, expenses) {
-                const ebitda = income - costs - expenses;
-                window.plChart.data.datasets[0].data = [
-                    income / 1000000,
-                    costs / 1000000,
-                    expenses / 1000000,
-                    ebitda / 1000000
-                ];
-                window.plChart.update();
-            }
-            
-            // KPIs Chart
-            const kpisCtx = document.getElementById('kpis-chart').getContext('2d');
-            window.kpisChart = new Chart(kpisCtx, {
-                type: 'radar',
-                data: {
-                    labels: ['Margen Bruto', 'Eficiencia', 'Tasa Éxito', 'NPS', 'Uptime'],
-                    datasets: [{
-                        label: 'Actual',
-                        data: [80, 75, 98, 65, 99],
-                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
-                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
-                    }, {
-                        label: 'Meta',
-                        data: [90, 85, 95, 70, 99.9],
-                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                        borderColor: 'rgba(46, 204, 113, 1)',
-                        pointBackgroundColor: 'rgba(46, 204, 113, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(46, 204, 113, 1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: {
-                                display: true
-                            },
-                            suggestedMin: 50,
-                            suggestedMax: 100
-                        }
-                    }
-                }
-            });
-            
-            // BCG Matrix
-            const bcgCtx = document.getElementById('bcg-matrix').getContext('2d');
-            window.bcgChart = new Chart(bcgCtx, {
-                type: 'bubble',
-                data: {
-                    datasets: [
-                        {
-                            label: 'Estrellas',
-                            data: [{
-                                x: 35,
-                                y: 70,
-                                r: 20
-                            }],
-                            backgroundColor: 'rgba(52, 152, 219, 0.7)'
-                        },
-                        {
-                            label: 'Vacas Lecheras',
-                            data: [{
-                                x: 25,
-                                y: 5,
-                                r: 15
-                            }],
-                            backgroundColor: 'rgba(46, 204, 113, 0.7)'
-                        },
-                        {
-                            label: 'Interrogantes',
-                            data: [{
-                                x: 3,
-                                y: 300,
-                                r: 10
-                            }],
-                            backgroundColor: 'rgba(241, 196, 15, 0.7)'
-                        },
-                        {
-                            label: 'Perros',
-                            data: [{
-                                x: 8,
-                                y: -10,
-                                r: 8
-                            }],
-                            backgroundColor: 'rgba(231, 76, 60, 0.7)'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Participación de Mercado (%)'
-                            },
-                            min: 0,
-                            max: 40
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Tasa de Crecimiento (%)'
-                            },
-                            min: -20,
-                            max: 350
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const labels = ['Transferencias', 'Tarjetas', 'Cripto', 'Cheques'];
-                                    return labels[context.datasetIndex];
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Porter's 5 Forces Chart
-            const porterCtx = document.getElementById('porter-chart').getContext('2d');
-            window.porterChart = new Chart(porterCtx, {
-                type: 'radar',
-                data: {
-                    labels: ['Nuevos Entrantes', 'Poder Proveedores', 'Poder Clientes', 'Productos Sustitutos', 'Rivalidad Competitiva'],
-                    datasets: [{
-                        label: 'Intensidad',
-                        data: [8, 5, 7, 6, 8],
-                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
-                        borderColor: 'rgba(231, 76, 60, 1)',
-                        pointBackgroundColor: 'rgba(231, 76, 60, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(231, 76, 60, 1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: {
-                                display: true
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 10
-                        }
-                    }
-                }
-            });
-            
-            // Initialize P&L with default values
-            updatePL(1.2);
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
