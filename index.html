@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador NewPay by Prisma</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --dashboard-bg: #f8f9fa;
+            --kpi-bg: #f1f8fe;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            margin-bottom: 10px;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 10px 15px;
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .nav-link.dashboard-link {
+            background-color: var(--dashboard-bg);
+        }
+        
+        .nav-link.kpi-link {
+            background-color: var(--kpi-bg);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            margin: 0;
+            color: var(--primary);
+        }
+        
+        .card-body {
+            padding: 10px 0;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1a252f;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-good {
+            background-color: var(--success);
+        }
+        
+        .status-warning {
+            background-color: var(--warning);
+        }
+        
+        .status-bad {
+            background-color: var(--danger);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .scenario-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: var(--light);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-btn.active {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .kpi-title {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .editable-cell:hover {
+            background-color: #f0f8ff;
+        }
+        
+        .editable-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--secondary);
+            padding: 8px 12px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        
+        .editable-list-item {
+            cursor: pointer;
+            position: relative;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        
+        .editable-list-item:hover {
+            background-color: #f0f8ff;
+        }
+        
+        .editable-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .bcg-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bcg-product-select {
+            flex: 2;
+        }
+        
+        .bcg-input {
+            flex: 1;
+        }
+        
+        .bcg-update-btn {
+            flex: 0.5;
+        }
+        
+        .simulator-history {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .bcg-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Simulador de Negocio NewPay</h1>
+            <p class="subtitle">by Prisma - Modelo interactivo para pagos instantáneos</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#" class="nav-link" data-section="pl">P&L Dinámico</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-section="pestel">Análisis PESTEL</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-section="porter">5 Fuerzas de Porter</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-section="bcg">Matriz BCG</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-section="simulator">Simulador de Decisiones</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link dashboard-link" data-section="dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link kpi-link" data-section="kpis">KPIs Clave</a></li>
+                </ul>
+            </div>
+            
+            <div class="main-content">
+                <!-- P&L Section -->
+                <section id="pl-section" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Estado de Resultados (P&L)</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="transaction-volume">Volumen de Transacciones (millones)</label>
+                                <input type="number" id="transaction-volume" value="1.2" step="0.1" min="0">
+                            </div>
+                            
+                            <div class="form-group grid-3">
+                                <div>
+                                    <label for="income-percent">% Ingresos por Transacción</label>
+                                    <input type="number" id="income-percent" value="100" min="0" step="1">
+                                </div>
+                                <div>
+                                    <label for="cost-percent">% Costos Directos</label>
+                                    <input type="number" id="cost-percent" value="60" min="0" max="100" step="1">
+                                </div>
+                                <div>
+                                    <label for="expense-percent">% Gastos Operativos</label>
+                                    <input type="number" id="expense-percent" value="8" min="0" max="100" step="1">
+                                </div>
+                            </div>
+                            
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Concepto</th>
+                                        <th>Valor Base</th>
+                                        <th>% de Ingresos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Ingresos Operativos</td>
+                                        <td id="operating-income" class="editable-cell">$10,000,000</td>
+                                        <td id="income-percent-display">100%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Costos Directos</td>
+                                        <td id="direct-costs" class="editable-cell">$6,000,000</td>
+                                        <td id="cost-percent-display">60%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Margen Bruto</td>
+                                        <td id="gross-margin">$4,000,000</td>
+                                        <td id="gross-margin-percent">40%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gastos Operativos</td>
+                                        <td id="operating-expenses" class="editable-cell">$800,000</td>
+                                        <td id="expense-percent-display">8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EBITDA</td>
+                                        <td id="ebitda">$3,200,000</td>
+                                        <td id="ebitda-percent">32%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="chart-container" style="margin-top: 30px;">
+                                <canvas id="pl-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- PESTEL Analysis Section -->
+                <section id="pestel-section" class="content-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Análisis PESTEL</h2>
+                            <button class="btn btn-primary" id="update-pestel">Actualizar Impacto</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="grid-3">
+                                <div class="kpi-card" style="background-color: #e8f4f8;">
+                                    <h3>Político</h3>
+                                    <ul id="politico-list">
+                                        <li class="editable-list-item">Apertura financiera en Argentina</li>
+                                        <li class="editable-list-item">Nuevas regulaciones de pagos</li>
+                                        <li class="editable-list-item">Presión para inclusión financiera</li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="politico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="politico-impact" value="7" min="1" max="10">
+                                    </div>
+                                </div>
+                                <div class="kpi-card" style="background-color: #e8f8f0;">
+                                    <h3>Económico</h3>
+                                    <ul id="economico-list">
+                                        <li class="editable-list-item">Crecimiento del 70% YoY en transacciones</li>
+                                        <li class="editable-list-item">Inflación impacta costos</li>
+                                        <li class="editable-list-item">Oportunidad en remesas</li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="economico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="economico-impact" value="8" min="1" max="10">
+                                    </div>
+                                </div>
+                                <div class="kpi-card" style="background-color: #f9f0e8;">
+                                    <h3>Social</h3>
+                                    <ul id="social-list">
+                                        <li class="editable-list-item">Demanda de inmediatez (Gen Z)</li>
+                                        <li class="editable-list-item">Adopción masiva de móviles</li>
+                                        <li class="editable-list-item">Desconfianza en bancos tradicionales</li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="social-impact">Impacto (1-10)</label>
+                                        <input type="number" id="social-impact" value="9" min="1" max="10">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid-3" style="margin-top: 20px;">
+                                <div class="kpi-card" style="background-color: #f0e8f8;">
+                                    <h3>Tecnológico</h3>
+                                    <ul id="tecnologico-list">
+                                        <li class="editable-list-item">Blockchain para remesas</li>
+                                        <li class="editable-list-item">APIs abiertas (Open Finance)</li>
+                                        <li class="editable-list-item">IA para prevención de fraude</li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="tecnologico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="tecnologico-impact" value="8" min="1" max="10">
+                                    </div>
+                                </div>
+                                <div class="kpi-card" style="background-color: #f8f8e8;">
+                                    <h3>Ecológico</h3>
+                                    <ul id="ecologico-list">
+                                        <li class="editable-list-item">Huella de carbono en data centers</li>
+                                        <li class="editable-list-item">Presión por operaciones paperless</li>
+                                        <li class="editable-list-item">Energías renovables para infraestructura</li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="ecologico-impact">Impacto (1-10)</label>
+                                        <input type="number" id="ecologico-impact" value="4" min="1" max="10">
+                                    </div>
+                                </div>
+                                <div class="kpi-card" style="background-color: #f8e8e8;">
+                                    <h3>Legal</h3>
+                                    <ul id="legal-list">
+                                        <li class="editable-list-item">Regulación de criptoactivos</li>
+                                        <li class="editable-list-item">Leyes de protección de datos</li>
+                                        <li class="editable-list-item">Nuevas normas contra lavado</li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="legal-impact">Impacto (1-10)</label>
+                                        <input type="number" id="legal-impact" value="6" min="1" max="10">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 30px;">
+                                <h3>Oportunidades Clave</h3>
+                                <div id="pestel-opportunities" class="grid-2">
+                                    <!-- Dynamically populated from JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Porter's 5 Forces Section -->
+                <section id="porter-section" class="content-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Análisis de las 5 Fuerzas de Porter</h2>
+                        </div>
+                        <div class="card-body">
+                            <div style="position: relative; height: 400px;">
+                                <canvas id="porter-chart"></canvas>
+                            </div>
+                            
+                            <div class="grid-2" style="margin-top: 30px;">
+                                <div>
+                                    <h3>Evaluación de Fuerzas</h3>
+                                    <table id="porter-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Fuerza</th>
+                                                <th>Intensidad (1-5)</th>
+                                                <th>Impacto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr data-force="entrantes">
+                                                <td>Nuevos Entrantes</td>
+                                                <td class="editable-cell">Alto</td>
+                                                <td>Fintechs como Nubank</td>
+                                            </tr>
+                                            <tr data-force="proveedores">
+                                                <td>Poder de Proveedores</td>
+                                                <td class="editable-cell">Medio</td>
+                                                <td>Dependencia de ACI</td>
+                                            </tr>
+                                            <tr data-force="clientes">
+                                                <td>Poder de Clientes</td>
+                                                <td class="editable-cell">Alto</td>
+                                                <td>Meli tiene gran poder</td>
+                                            </tr>
+                                            <tr data-force="sustitutos">
+                                                <td>Sustitutos</td>
+                                                <td class="editable-cell">Medio</td>
+                                                <td>Criptomonedas</td>
+                                            </tr>
+                                            <tr data-force="rivalidad">
+                                                <td>Rivalidad Competitiva</td>
+                                                <td class="editable-cell">Alto</td>
+                                                <td>Coelsa y Link dominan</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <h3>Estrategias Recomendadas</h3>
+                                    <ul id="porter-strategies" style="padding-left: 20px;">
+                                        <li class="editable-list-item">Fortalecer alianzas con fintechs para contrarrestar nuevos entrantes</li>
+                                        <li class="editable-list-item">Diversificar proveedores de infraestructura</li>
+                                        <li class="editable-list-item">Desarrollar lealtad con clientes clave (ej: programas de beneficios)</li>
+                                        <li class="editable-list-item">Innovar en productos para diferenciarse de sustitutos</li>
+                                        <li class="editable-list-item">Enfocarse en nichos no atendidos por competidores</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- BCG Matrix Section -->
+                <section id="bcg-section" class="content-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Matriz BCG - Portafolio de Productos</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="bcg-controls">
+                                <select id="bcg-product" class="bcg-product-select">
+                                    <option value="remesas">Remesas</option>
+                                    <option value="cripto">Cripto</option>
+                                    <option value="transferenciasPull">Transferencias Pull</option>
+                                    <option value="pagosTransferencias">Pagos con transferencias</option>
+                                    <option value="transferenciasRecurrentes">Transferencias Recurrentes</option>
+                                    <option value="pspCashout">Servicios PSP CashOut</option>
+                                    <option value="pspCashin">Servicios PSP CashIn</option>
+                                    <option value="extraccionTransferencias">Extracción con transferencias</option>
+                                    <option value="masterSend">MasterSend-VisaDirect</option>
+                                    <option value="transferenciasPush">Transferencias Push</option>
+                                    <option value="prevencionFraude">Prevención del Fraude</option>
+                                    <option value="debin">Debin</option>
+                                </select>
+                                <input type="number" id="bcg-market-share" class="bcg-input" placeholder="Participación %" min="0" max="100" step="0.1">
+                                <input type="number" id="bcg-growth" class="bcg-input" placeholder="Crecimiento %" step="1">
+                                <button class="btn bcg-update-btn" id="update-bcg">Actualizar</button>
+                            </div>
+                            
+                            <div style="position: relative; height: 400px;">
+                                <canvas id="bcg-matrix"></canvas>
+                            </div>
+                            
+                            <table style="margin-top: 30px;" id="bcg-table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Participación de Mercado</th>
+                                        <th>Crecimiento Anual</th>
+                                        <th>Clasificación</th>
+                                        <th>Recomendación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-product="remesas">
+                                        <td>Remesas</td>
+                                        <td class="editable-cell">3%</td>
+                                        <td class="editable-cell">300%</td>
+                                        <td>Interrogante</td>
+                                        <td class="editable-cell">Evaluar potencial</td>
+                                    </tr>
+                                    <tr data-product="cripto">
+                                        <td>Cripto</td>
+                                        <td class="editable-cell">2%</td>
+                                        <td class="editable-cell">250%</td>
+                                        <td>Interrogante</td>
+                                        <td class="editable-cell">Evaluar potencial</td>
+                                    </tr>
+                                    <tr data-product="transferenciasPull">
+                                        <td>Transferencias Pull</td>
+                                        <td class="editable-cell">5%</td>
+                                        <td class="editable-cell">180%</td>
+                                        <td>Interrogante</td>
+                                        <td class="editable-cell">Evaluar potencial</td>
+                                    </tr>
+                                    <tr data-product="pagosTransferencias">
+                                        <td>Pagos con transferencias</td>
+                                        <td class="editable-cell">4%</td>
+                                        <td class="editable-cell">200%</td>
+                                        <td>Interrogante</td>
+                                        <td class="editable-cell">Evaluar potencial</td>
+                                    </tr>
+                                    <tr data-product="transferenciasRecurrentes">
+                                        <td>Transferencias Recurrentes</td>
+                                        <td class="editable-cell">6%</td>
+                                        <td class="editable-cell">150%</td>
+                                        <td>Interrogante</td>
+                                        <td class="editable-cell">Evaluar potencial</td>
+                                    </tr>
+                                    <tr data-product="pspCashout">
+                                        <td>Servicios PSP CashOut</td>
+                                        <td class="editable-cell">35%</td>
+                                        <td class="editable-cell">70%</td>
+                                        <td>Estrella</td>
+                                        <td class="editable-cell">Invertir para mantener liderazgo</td>
+                                    </tr>
+                                    <tr data-product="pspCashin">
+                                        <td>Servicios PSP CashIn</td>
+                                        <td class="editable-cell">30%</td>
+                                        <td class="editable-cell">65%</td>
+                                        <td>Estrella</td>
+                                        <td class="editable-cell">Invertir para mantener liderazgo</td>
+                                    </tr>
+                                    <tr data-product="extraccionTransferencias">
+                                        <td>Extracción con transferencias</td>
+                                        <td class="editable-cell">8%</td>
+                                        <td class="editable-cell">-10%</td>
+                                        <td>Perro</td>
+                                        <td class="editable-cell">Desinvertir</td>
+                                    </tr>
+                                    <tr data-product="masterSend">
+                                        <td>MasterSend-VisaDirect</td>
+                                        <td class="editable-cell">6%</td>
+                                        <td class="editable-cell">-15%</td>
+                                        <td>Perro</td>
+                                        <td class="editable-cell">Desinvertir</td>
+                                    </tr>
+                                    <tr data-product="transferenciasPush">
+                                        <td>Transferencias Push</td>
+                                        <td class="editable-cell">25%</td>
+                                        <td class="editable-cell">5%</td>
+                                        <td>Vaca Lechera</td>
+                                        <td class="editable-cell">Mantener, generar cash flow</td>
+                                    </tr>
+                                    <tr data-product="prevencionFraude">
+                                        <td>Prevención del Fraude</td>
+                                        <td class="editable-cell">22%</td>
+                                        <td class="editable-cell">8%</td>
+                                        <td>Vaca Lechera</td>
+                                        <td class="editable-cell">Mantener, generar cash flow</td>
+                                    </tr>
+                                    <tr data-product="debin">
+                                        <td>Debin</td>
+                                        <td class="editable-cell">20%</td>
+                                        <td class="editable-cell">10%</td>
+                                        <td>Vaca Lechera</td>
+                                        <td class="editable-cell">Mantener, generar cash flow</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Decision Simulator Section -->
+                <section id="simulator-section" class="content-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Simulador de Decisiones Estratégicas</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="decision-scenario">Escenario:</label>
+                                <select id="decision-scenario">
+                                    <option value="crypto">Inversión en Cripto para Remesas</option>
+                                    <option value="fintech">Alianza con Fintech</option>
+                                    <option value="product">Lanzamiento de Nuevo Producto</option>
+                                    <option value="bcg">Reasignación Portafolio BCG</option>
+                                    <option value="pestel">Cambio Estrategia PESTEL</option>
+                                </select>
+                            </div>
+                            
+                            <div id="crypto-options" class="scenario-options">
+                                <h3>Opciones de Inversión en Cripto</h3>
+                                <div class="form-group">
+                                    <label for="crypto-investment">Monto a Invertir (USD)</label>
+                                    <input type="number" id="crypto-investment" value="1000000" min="0" step="100000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="crypto-adoption">Tasa de Adopción Esperada (% anual)</label>
+                                    <input type="number" id="crypto-adoption" value="15" min="0" max="100">
+                                </div>
+                                <button class="btn" id="simulate-crypto">Simular</button>
+                                
+                                <div id="crypto-results" style="margin-top: 20px; display: none;">
+                                    <h4>Resultados de la Simulación</h4>
+                                    <table>
+                                        <tr>
+                                            <td>ROI Esperado (3 años):</td>
+                                            <td id="crypto-roi">45%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Participación de Mercado:</td>
+                                            <td id="crypto-market-share">8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en EBITDA:</td>
+                                            <td id="crypto-ebitda-impact">+12%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en NPS:</td>
+                                            <td id="crypto-nps-impact">+5 puntos</td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn btn-primary" id="apply-crypto">Aplicar Cambios</button>
+                                </div>
+                            </div>
+                            
+                            <div id="fintech-options" class="scenario-options hidden">
+                                <h3>Alianza con Fintech</h3>
+                                <div class="form-group">
+                                    <label for="fintech-type">Tipo de Fintech</label>
+                                    <select id="fintech-type">
+                                        <option value="neobank">Neobanco (ej: Nubank)</option>
+                                        <option value="remesas">Plataforma de Remesas</option>
+                                        <option value="pagos">Procesador de Pagos</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fintech-investment">Inversión Requerida (USD)</label>
+                                    <input type="number" id="fintech-investment" value="500000" min="0" step="100000">
+                                </div>
+                                <button class="btn" id="simulate-fintech">Simular</button>
+                                
+                                <div id="fintech-results" style="margin-top: 20px; display: none;">
+                                    <h4>Resultados de la Simulación</h4>
+                                    <table>
+                                        <tr>
+                                            <td>Transacciones Adicionales/año:</td>
+                                            <td id="fintech-txns">250,000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROI Esperado (2 años):</td>
+                                            <td id="fintech-roi">32%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en NPS:</td>
+                                            <td id="fintech-nps-impact">+8 puntos</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en Costos:</td>
+                                            <td id="fintech-cost-impact">-5%</td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn btn-primary" id="apply-fintech">Aplicar Cambios</button>
+                                </div>
+                            </div>
+                            
+                            <div id="product-options" class="scenario-options hidden">
+                                <h3>Lanzamiento de Nuevo Producto</h3>
+                                <div class="form-group">
+                                    <label for="product-type">Tipo de Producto</label>
+                                    <select id="product-type">
+                                        <option value="qr">Pagos por QR Avanzado</option>
+                                        <option value="billetera">Billetera Digital</option>
+                                        <option value="credito">Línea de Crédito Instantáneo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-investment">Inversión Requerida (USD)</label>
+                                    <input type="number" id="product-investment" value="750000" min="0" step="100000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-timeline">Horizonte de Implementación (meses)</label>
+                                    <input type="number" id="product-timeline" value="9" min="3" max="24">
+                                </div>
+                                <button class="btn" id="simulate-product">Simular</button>
+                                
+                                <div id="product-results" style="margin-top: 20px; display: none;">
+                                    <h4>Resultados de la Simulación</h4>
+                                    <table>
+                                        <tr>
+                                            <td>Tiempo para alcanzar punto de equilibrio:</td>
+                                            <td id="product-breakeven">14 meses</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Participación de mercado esperada:</td>
+                                            <td id="product-market-share">12%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en Churn Rate:</td>
+                                            <td id="product-churn-impact">-2%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en Ingresos:</td>
+                                            <td id="product-revenue-impact">+15%</td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn btn-primary" id="apply-product">Aplicar Cambios</button>
+                                </div>
+                            </div>
+                            
+                            <div id="bcg-options" class="scenario-options hidden">
+                                <h3>Reasignación de Portafolio BCG</h3>
+                                <div class="form-group">
+                                    <label for="bcg-strategy">Estrategia de Inversión</label>
+                                    <select id="bcg-strategy">
+                                        <option value="balance">Balanceado (actual)</option>
+                                        <option value="growth">Enfoque en Crecimiento</option>
+                                        <option value="profit">Enfoque en Rentabilidad</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bcg-budget">Presupuesto Total (USD)</label>
+                                    <input type="number" id="bcg-budget" value="2000000" min="0" step="100000">
+                                </div>
+                                <button class="btn" id="simulate-bcg">Simular</button>
+                                
+                                    <div id="bcg-results" style="margin-top: 20px; display: none;">
+                                        <h4>Resultados de la Simulación</h4>
+                                        <table>
+                                            <tr>
+                                                <td>ROI Esperado (3 años):</td>
+                                                <td id="bcg-roi">28%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Impacto en Ingresos:</td>
+                                                <td id="bcg-revenue-impact">+18%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Impacto en EBITDA:</td>
+                                                <td id="bcg-ebitda-impact">+8%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Participación de Mercado Total:</td>
+                                                <td id="bcg-market-share">+5%</td>
+                                            </tr>
+                                        </table>
+                                        <div class="form-group">
+                                            <label for="bcg-scenario">Aplicar a Escenario:</label>
+                                            <select id="bcg-scenario">
+                                                <option value="base">Base</option>
+                                                <option value="optimista">Optimista</option>
+                                                <option value="pesimista">Pesimista</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn btn-primary" id="apply-bcg">Aplicar Cambios</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="pestel-options" class="scenario-options hidden">
+                                <h3>Cambio de Estrategia PESTEL</h3>
+                                <div class="form-group">
+                                    <label for="pestel-focus">Área de Enfoque</label>
+                                    <select id="pestel-focus">
+                                        <option value="tecnologico">Tecnológico (Blockchain, IA)</option>
+                                        <option value="regulatorio">Regulatorio (Cumplimiento)</option>
+                                        <option value="social">Social (Experiencia Usuario)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pestel-investment">Inversión Requerida (USD)</label>
+                                    <input type="number" id="pestel-investment" value="1200000" min="0" step="100000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pestel-timeline">Horizonte (meses)</label>
+                                    <input type="number" id="pestel-timeline" value="12" min="3" max="36">
+                                </div>
+                                <button class="btn" id="simulate-pestel">Simular</button>
+                                
+                                <div id="pestel-results" style="margin-top: 20px; display: none;">
+                                    <h4>Resultados de la Simulación</h4>
+                                    <table>
+                                        <tr>
+                                            <td>Impacto en NPS:</td>
+                                            <td id="pestel-nps-impact">+10 puntos</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Reducción de Riesgos:</td>
+                                            <td id="pestel-risk-impact">-25%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impacto en Costos Operativos:</td>
+                                            <td id="pestel-cost-impact">-8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tiempo para ROI:</td>
+                                            <td id="pestel-roi-time">18 meses</td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn btn-primary" id="apply-pestel">Aplicar Cambios</button>
+                                </div>
+                            </div>
+                            
+                            <div class="simulator-history">
+                                <h3>Historial de Simulaciones</h3>
+                                <div id="simulation-history">
+                                    <!-- Dynamically populated from JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Resumen Ejecutivo</h2>
+                            <div class="scenario-controls">
+                                <button class="scenario-btn active" data-scenario="base">Escenario Base</button>
+                                <button class="scenario-btn" data-scenario="optimista">Optimista</button>
+                                <button class="scenario-btn" data-scenario="pesimista">Pesimista</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="grid-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Ingresos Operativos</div>
+                                    <div class="kpi-value" id="revenue-kpi">$10.0M</div>
+                                    <div id="revenue-change">+12% vs anterior</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-title">EBITDA</div>
+                                    <div class="kpi-value" id="ebitda-kpi">$3.2M</div>
+                                    <div id="ebitda-margin">Margen: 32%</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Transacciones</div>
+                                    <div class="kpi-value" id="txn-kpi">1.2M</div>
+                                    <div id="txn-change">+70% YoY</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid-2" style="margin-top: 20px;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Evolución de Ingresos</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="revenue-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">KPIs Principales</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>KPI</th>
+                                                    <th>Valor</th>
+                                                    <th>Meta</th>
+                                                    <th>Estado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Margen Bruto/Transacción</td>
+                                                    <td id="gross-margin-per-txn">$0.50</td>
+                                                    <td>$0.40</td>
+                                                    <td><span class="status-indicator status-warning"></span><span id="gross-margin-status">Alerta</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Tasa de Éxito</td>
+                                                    <td id="success-rate-kpi">98%</td>
+                                                    <td>95%</td>
+                                                    <td><span class="status-indicator status-good"></span><span id="success-rate-status">Óptimo</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>NPS</td>
+                                                    <td id="nps-dashboard">65</td>
+                                                    <td>70</td>
+                                                    <td><span class="status-indicator status-warning"></span><span id="nps-status">Mejorable</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- KPIs Section -->
+                <section id="kpis-section" class="content-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Tablero de KPIs</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="grid-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Costo por Transacción</div>
+                                    <div class="kpi-value" id="cost-per-txn">$0.50</div>
+                                    <div>Meta: $0.40</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Eficiencia Operativa</div>
+                                    <div class="kpi-value" id="op-efficiency">32%</div>
+                                    <div>EBITDA/Ingresos</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Tasa de Éxito</div>
+                                    <div class="kpi-value" id="success-rate">98%</div>
+                                    <div>Meta: 95%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid-3" style="margin-top: 20px;">
+                                <div class="kpi-card">
+                                    <div class="kpi-title">NPS</div>
+                                    <div class="kpi-value" id="nps-kpi">65</div>
+                                    <div>Meta: 70</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Churn Rate</div>
+                                    <div class="kpi-value" id="churn-rate">5%</div>
+                                    <div>Meta: <4%</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-title">Uptime</div>
+                                    <div class="kpi-value" id="uptime-kpi">99.95%</div>
+                                    <div>Meta: 99.9%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container" style="margin-top: 30px;">
+                                <canvas id="kpis-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
